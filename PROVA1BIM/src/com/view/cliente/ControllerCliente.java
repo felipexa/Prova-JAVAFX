@@ -84,77 +84,104 @@ public class ControllerCliente extends Application implements Initializable{
             e.printStackTrace();
         }
     }
-    
+
+    public  boolean validacao() {
+    	if(textFieldNome.getText().isEmpty() | textFieldCpf.getText().isEmpty() | datePickerData.getValue() == null |  textFieldSalario.getText().isEmpty()){
+    		Alert alert = new Alert(AlertType.WARNING);
+    		alert.setTitle("Alerta");
+    		alert.setHeaderText("Campos não preenchidos!");
+    		alert.setContentText("Preencha os campos!");
+    		alert.showAndWait();
+    		return false;
+    	} 
+    	return true;
+    	
+    }
     @FXML
     void inserirCliente(ActionEvent event) {
     	
-    	Cliente cliente = pegaDados();
-		limpaCampos();
-		int qtde = new ClienteDAO().inserir(cliente);
-		listarClientes();	
+    	if(validacao()) {
+	    	Cliente cliente = pegaDados();
+			limpaCampos();
+			int qtde = new ClienteDAO().inserir(cliente);
+			listarClientes();
+    	} 
 
     }
 
     @FXML
     void alterarCliente(ActionEvent event) {
-
-    	Cliente cliente= pegaDadosID();
-    	if(String.valueOf(cliente.getId()) == null || String.valueOf(cliente.getId()) =="") {
-    		Alert alert = new Alert(AlertType.WARNING);
-    		alert.setTitle("Alerrta");
-    		alert.setHeaderText("Cliente não selecionado");
-    		alert.setContentText("Selecione um Cliente para alterar");
-    	}
-    	else {
-    		Alert alert = new Alert(AlertType.CONFIRMATION);
-        	alert.setTitle("Alterar Cliente");
-        	alert.setHeaderText("Você está prestes a alterar um Cliente");
-        	alert.setContentText("Tem certeza que deseja alterar o Cliente?");
-        	Optional<ButtonType> result = alert.showAndWait();
-        	if (result.get() == ButtonType.OK){
-        	
-    		limpaCampos();
-    		int qtde = new ClienteDAO().alterar(cliente);
-    		listarClientes();
-    		
-        	}
-    	}    	
+    	if(validacao()) {
+	    	Cliente cliente= pegaDadosID();
+	    	if(String.valueOf(cliente.getId()) == null || String.valueOf(cliente.getId()) =="") {
+	    		Alert alert = new Alert(AlertType.WARNING);
+	    		alert.setTitle("Alerta");
+	    		alert.setHeaderText("Cliente não selecionado");
+	    		alert.setContentText("Selecione um Cliente para alterar");
+	    	}
+	    	else {
+	    		Alert alert = new Alert(AlertType.CONFIRMATION);
+	        	alert.setTitle("Alterar Cliente");
+	        	alert.setHeaderText("Você está prestes a alterar um Cliente");
+	        	alert.setContentText("Tem certeza que deseja alterar o Cliente?");
+	        	Optional<ButtonType> result = alert.showAndWait();
+	        	if (result.get() == ButtonType.OK){
+	        	
+	    		limpaCampos();
+	    		int qtde = new ClienteDAO().alterar(cliente);
+	    		listarClientes();
+	    		
+	        	}
+	    	}  
+    	}  
     }
     
     @FXML
     void excluirCliente(ActionEvent event) {
-
-    	Alert alert = new Alert(AlertType.CONFIRMATION);
-    	alert.setTitle("Deletar cliente");
-    	alert.setHeaderText("Você está prestes a deletar um cliente");
-    	alert.setContentText("Tem certeza que deseja deletar o cliente?");
-    	Optional<ButtonType> result = alert.showAndWait();
-    	if (result.get() == ButtonType.OK){
-    		Cliente cliente= pegaDadosID();
-        	int qtde = new ClienteDAO().deletar(cliente.getId());
-        	limpaCampos();
-        	listarClientes();
+    	if(validacao()) {
+	    	Alert alert = new Alert(AlertType.CONFIRMATION);
+	    	alert.setTitle("Deletar cliente");
+	    	alert.setHeaderText("Você está prestes a deletar um cliente");
+	    	alert.setContentText("Tem certeza que deseja deletar o cliente?");
+	    	Optional<ButtonType> result = alert.showAndWait();
+	    	if (result.get() == ButtonType.OK){
+	    		Cliente cliente= pegaDadosID();
+	        	int qtde = new ClienteDAO().deletar(cliente.getId());
+	        	limpaCampos();
+	        	listarClientes();
+	    	}
     	}
     }
 
     @FXML
     void buscarCliente(ActionEvent event) {
     	
-    	String idString = textFieldId.getText();
-		Cliente cliente = null;
-		if (!idString.equals("")) {
-			try {
-				int id = Integer.valueOf(idString);
-				cliente = new ClienteDAO().buscar(id);
-			} catch (Exception e) {
-			}
-			if (cliente != null) {				
-				textFieldNome.setText(cliente.getNome());
-				textFieldCpf.setText(cliente.getCpf());
-				textFieldSalario.setText(cliente.getSalario() + "");
-				datePickerData.setValue(cliente.getNascimento().toLocalDate());
-			}
-		}	
+    	if(textFieldId.getText().isEmpty()) {
+    		Alert alert = new Alert(AlertType.WARNING);
+    		alert.setTitle("Alerta");
+    		alert.setHeaderText("Campos não preenchidos!");
+    		alert.setContentText("Preencha os campos!");
+    		alert.showAndWait();    		
+    		
+    	} else {
+    		String idString = textFieldId.getText();
+    		Cliente cliente = null;
+    		if (!idString.equals("")) {
+    			try {
+    				int id = Integer.valueOf(idString);
+    				cliente = new ClienteDAO().buscar(id);
+    			} catch (Exception e) {
+    			}
+    			if (cliente != null) {				
+    				textFieldNome.setText(cliente.getNome());
+    				textFieldCpf.setText(cliente.getCpf());
+    				textFieldSalario.setText(cliente.getSalario() + "");
+    				datePickerData.setValue(cliente.getNascimento().toLocalDate());
+    			}
+    		}	    		
+    	}   	
+    	
+    
     }
 
 	private void limpaCampos() {
